@@ -1,0 +1,122 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider Robot Control</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #ccc;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        .leg-section {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #2e2e2e;
+        }
+        .leg-section input {
+            width: calc(33% - 22px);
+            margin-right: 10px;
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #333;
+            color: #fff;
+        }
+        .leg-section input[type="number"] {
+            width: calc(33% - 22px);
+            text-align: right;
+        }
+        .leg-section button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+        }
+        .leg-section button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spider Robot Control</h1>
+        <form id="robotControlForm">
+            <div class="leg-section">
+                <h2>Leg 0</h2>
+                <input type="number" id="leg0_joint0" placeholder="Joint 0" />
+                <input type="number" id="leg0_joint1" placeholder="Joint 1" />
+                <input type="number" id="leg0_joint2" placeholder="Joint 2" />
+                <input type="number" id="leg0_joint3" placeholder="Joint 3" />
+                <input type="text" id="leg0_ip" placeholder="IP Address" />
+                <input type="number" id="leg0_port" placeholder="Port" />
+                <button type="button" onclick="sendDemand(0)">Send Leg 0</button>
+            </div>
+            <!-- Repeat for Legs 1, 2, 3 -->
+            <div class="leg-section">
+                <h2>Leg 1</h2>
+                <input type="number" id="leg1_joint0" placeholder="Joint 0" />
+                <input type="number" id="leg1_joint1" placeholder="Joint 1" />
+                <input type="number" id="leg1_joint2" placeholder="Joint 2" />
+                <input type="number" id="leg1_joint3" placeholder="Joint 3" />
+                <input type="text" id="leg1_ip" placeholder="IP Address" />
+                <input type="number" id="leg1_port" placeholder="Port" />
+                <button type="button" onclick="sendDemand(1)">Send Leg 1</button>
+            </div>
+            <!-- Add similar blocks for Legs 2 and 3 -->
+        </form>
+    </div>
+    <script>
+        async function sendDemand(legId) {
+            const joint0 = document.getElementById(`leg${legId}_joint0`).value;
+            const joint1 = document.getElementById(`leg${legId}_joint1`).value;
+            const joint2 = document.getElementById(`leg${legId}_joint2`).value;
+            const joint3 = document.getElementById(`leg${legId}_joint3`).value;
+            const ip = document.getElementById(`leg${legId}_ip`).value;
+            const port = document.getElementById(`leg${legId}_port`).value;
+
+            if (!ip || !port || isNaN(port) || port < 1 || port > 65535) {
+                alert('Please enter valid IP address and port.');
+                return;
+            }
+
+            const response = await fetch('/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    legId,
+                    jointPositions: [
+                        parseInt(joint0) || 0,
+                        parseInt(joint1) || 0,
+                        parseInt(joint2) || 0,
+                        parseInt(joint3) || 0
+                    ],
+                    ip,
+                    port: parseInt(port)
+                })
+            });
+
+            const result = await response.text();
+            alert(result);
+        }
+    </script>
+</body>
+</html>
