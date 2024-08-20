@@ -1,9 +1,15 @@
 const express = require('express');
 const dgram = require('dgram');
+const cors = require('cors');
+const path = require('path');
 const app = express();
 const udpClient = dgram.createSocket('udp4');
 
+app.use(cors()); // Enable CORS
 app.use(express.json());
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/send-udp', (req, res) => {
     const { message, ip, port } = req.body;
