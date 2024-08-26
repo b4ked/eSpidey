@@ -27,19 +27,18 @@ app.post('/send', (req, res) => {
   // Fill the header
   buffer.writeUInt8(0xAA, 0); // Start of Packet
   buffer.writeUInt8(0x01, 1); // Command ID for Joint Position Demand
-  buffer.writeUInt16BE(17, 2); // Length of data (including header and checksum)
+  buffer.writeUInt16LE(25, 2); // Length of data (including header and data)
+  buffer.writeUInt8(0xAA, 4); //Checksum, 0xFFFFFFFF for now
+  buffer.writeUInt8(0xAA, 5); //Checksum, 0xFFFFFFFF for now
+  buffer.writeUInt8(0xAA, 6); //Checksum, 0xFFFFFFFF for now
+  buffer.writeUInt8(0xAA, 7); //Checksum, 0xFFFFFFFF for now
 
   // Write the data
-  buffer.writeUInt8(legId, 4); // Leg ID
-
+  buffer.writeUInt8(legId, 8); // Leg ID
   // Write joint positions (4 joints × 4 bytes each = 16 bytes)
   for (let i = 0; i < 4; i++) {
-    buffer.writeInt32LE(jointPositions[i], 5 + i * 4);
+    buffer.writeInt32LE(jointPositions[i], 9 + i * 4);
   }
-
-  // Calculate and write checksum (simple example: sum of all bytes, modulo 256)
-  const checksum = buffer.reduce((acc, byte) => acc + byte, 0) & 0xFF;
-  buffer.writeUInt8(checksum, 13); // Write checksum in the last byte
 
   // Send the buffer
   udpClient.send(buffer, port, ip, (err) => {

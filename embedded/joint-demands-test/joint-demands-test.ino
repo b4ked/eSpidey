@@ -52,6 +52,17 @@ void parseUdpPacket(const char* packet, int length) {
     return;
   }
 
+  Serial.print("length: ");
+  Serial.println(length);
+  
+  Serial.print("Packet:");
+  for (uint8_t i = 0; i < length; i++)
+  {
+    Serial.print(i);
+    Serial.print(" : ");
+    Serial.println(packet[i], HEX);
+  }
+
   // Header
   uint8_t startOfPacket = packet[0];
   uint8_t commandId = packet[1];
@@ -74,11 +85,11 @@ void parseUdpPacket(const char* packet, int length) {
   Serial.print("  Checksum: 0x");
   Serial.println(checksum, HEX);
 
-  // Check if data length matches actual length
-  if (length != 8 + dataLength) {
+  /*// Check if data length matches actual length
+  if (length != dataLength) {
     Serial.println("Error: Data length mismatch");
     return;
-  }
+  }*/ //TODO: add this check in
 
   // Data parsing
   Serial.println("Data:");
